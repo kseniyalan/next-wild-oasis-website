@@ -3,6 +3,14 @@ import Navigation from "@/app/_components/Navigation";
 
 import "@/app/_styles/globals.css";
 
+import { Josefin_Sans } from "next/font/google";
+
+// Load the Josefin Sans font from Google Fonts
+const josefin = Josefin_Sans({
+  subsets: ["latin"], // Load only the Latin character set  
+  display: "swap",
+});
+
 // %s will be replaced with the page title
 export const metadata = {
   title: {
@@ -17,7 +25,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="antialiased bg-primary-950 text-primary-100 min-h-screen flex flex-col relative">
+      <body
+        className={`${josefin.className} antialiased bg-primary-950 text-primary-100 min-h-screen flex flex-col relative`}
+      >
         <header>
           <Logo />
           <Navigation />
