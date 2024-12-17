@@ -1,3 +1,5 @@
+// notFound is a function that comes from next/navigation to display a 404 page. 
+import { notFound } from "next/navigation";
 import { eachDayOfInterval } from 'date-fns';
 import { supabase } from "./supabase";
 /////////////
@@ -15,6 +17,7 @@ export async function getCabin(id) {
 
   if (error) {
     console.error(error);
+    notFound();
   }
 
   return data;
