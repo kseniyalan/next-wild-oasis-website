@@ -1,14 +1,15 @@
 import SelectCountry from "@/app/_components/SelectCountry";
 import UpdateProfileForm from "@/app/_components/UpdateProfileForm";
+import { auth } from "@/app/_lib/auth";
+import { getGuest } from "@/app/_lib/data-service";
 
 export const metadata = {
   title: "Update profile",
 };
 
-export default function Page() {
-  // CHANGE
-  //const countryFlag = "pt.jpg";
-  const nationality = "portugal";
+export default async function Page() {
+  const session = await auth();
+  const guest = await getGuest(session.user.email);
 
   return (
     <div>
@@ -27,12 +28,12 @@ export default function Page() {
       {/* Here we provide SelectCountry as a children prop to UpdateProfileForm */}
       {/* This way, SelectCountry will be rendered as a server component */}
       {/* This is a good way to mix server and client components */}
-      <UpdateProfileForm>
+      <UpdateProfileForm guest={guest}>
         <SelectCountry
           name="nationality"
           id="nationality"
           className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-          defaultCountry={nationality}
+          defaultCountry={guest.nationality}
         />
       </UpdateProfileForm>
     </div>
