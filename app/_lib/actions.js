@@ -1,8 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
+import { getBookings } from "./data-service";
 import { auth, signIn, signOut } from "./auth";
 import { supabase } from "./supabase";
-import { revalidatePath } from "next/cache";
+
 
 
 export async function updateGuest(formData) {
@@ -34,4 +37,28 @@ export async function signInAction() {
 
 export async function signOutAction() {
   await signOut({ redirectTo: "/" });
+}
+
+// Bookings
+export async function deleteBooking(bookingId) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
+
+  // Check if the booking belongs to the logged-in user
+  // It is for prevent somebody to steal cURL request and delete other user's booking
+  const guestBookings = await getBookings(session.user.guestId);
+  const guestBookingIds = guestBookings.map((booking) => booking.id);
+
+  if (!guestBookingIds.includes(bookingId))
+    throw new Error("You are not allowed to delete this booking");
+
+  const { error } = await supabase
+    .from("bookings")
+    .delete()
+    .eq("id", bookingId);
+
+  if (error) throw new Error("Booking could not be deleted");
+
+  // Manually revalidate the cache for the reservations page
+  revalidatePath("/account/reservations");
 }
